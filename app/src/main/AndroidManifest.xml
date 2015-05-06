@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ListFlats_Activity"
+            android:label="@string/title_activity_list_flats_" >
+        </activity>
     </application>
 
 </manifest>
