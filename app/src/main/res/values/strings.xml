@@ -5,5 +5,12 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_list_flats_">ListFlats_Activity</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_llista_pisos">LlistaPisosActivity</string>
+    <string name="title_activity_afegir_pis">AfegirPis</string>
+    <string name="title_activity_buscar_pis">BuscarPis</string>
+    <string name="title_activity_main_menu">MainMenuActivity</string>
+    <string name="title_activity_tasques">TasquesActivity</string>
+    <string name="title_activity_map">MapActivity</string>
 
 </resources>

@@ -8,8 +8,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".Login"
-            android:label="@string/app_name" >
+            android:name=".SplashActivity"
+            android:label="@string/title_activity_splash" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,8 +17,36 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".Login"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name=".ListFlats_Activity"
             android:label="@string/title_activity_list_flats_" >
+        </activity>
+        <activity
+            android:name=".LlistaPisosActivity"
+            android:label="@string/title_activity_llista_pisos" >
+        </activity>
+        <activity
+            android:name=".AfegirPis"
+            android:label="@string/title_activity_afegir_pis" >
+        </activity>
+        <activity
+            android:name=".BuscarPis"
+            android:label="@string/title_activity_buscar_pis" >
+        </activity>
+        <activity
+            android:name=".MainMenuActivity"
+            android:label="@string/title_activity_main_menu" >
+        </activity>
+        <activity
+            android:name=".TasquesActivity"
+            android:label="@string/title_activity_tasques" >
+        </activity>
+        <activity
+            android:name=".MapActivity"
+            android:label="@string/title_activity_map" >
         </activity>
     </application>
 
