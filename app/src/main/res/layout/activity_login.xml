@@ -1,11 +1,82 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".Login">
+    android:background="#D8D8D8"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".Login"
+    android:orientation="vertical"
+    android:weightSum="1">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="134dp"
+        android:layout_marginTop="10dp">
 
-</RelativeLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:src="@drawable/ic_logomyhome2"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"></LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/editText"
+            android:layout_weight="1"
+            android:selectAllOnFocus="false"
+            android:text="Usuari" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/editText2"
+            android:text="Pasword" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"></LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#01A9DB"
+            android:text="Registrar-se"
+            android:id="@+id/btnLogin"
+            android:textAlignment="center"
+            android:singleLine="false" />
+    </LinearLayout>
+</LinearLayout>
