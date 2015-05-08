@@ -1,9 +1,9 @@
 package com.infobosccoma.projecte.myhome;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 
 
 public class SplashActivity extends ActionBarActivity {
@@ -20,7 +20,7 @@ public class SplashActivity extends ActionBarActivity {
 
             @Override
             public void run() {
-                Intent i = new Intent(SplashActivity.this, Login.class);
+                Intent i = new Intent(SplashActivity.this, ListFlats_Activity.class);
                 startActivity(i);
                 finish();
             }

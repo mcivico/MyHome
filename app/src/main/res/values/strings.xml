@@ -13,5 +13,6 @@
     <string name="title_activity_tasques">TasquesActivity</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="colorBackground">#D8D8D8</string>
+    <string name="title_activity_new_flat">NewFlatActivity</string>
 
 </resources>

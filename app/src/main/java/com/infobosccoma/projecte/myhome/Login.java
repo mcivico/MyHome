@@ -1,9 +1,10 @@
 package com.infobosccoma.projecte.myhome;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
 import com.infobosccoma.projecte.myhome.Model.users;
 
 import org.apache.http.HttpResponse;
@@ -32,18 +34,26 @@ import java.util.List;
 
 public class Login extends ActionBarActivity implements View.OnClickListener {
 
+    private static final String URL_DATA = "http://52.16.108.57/scripts/users.php";
+
+    private DescarregarDades download;
+
+    UsuariSessio sessioUsuari;
+
     TextView txtUser, txtPassword;
     Button btnRegistrar;
-    private DescarregarDades download;
+
     private ArrayList<users> dades;
-    private static final String URL_DATA = "http://52.16.108.57/scripts/users.php";
-    String usuari, password;
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        sessioUsuari = new UsuariSessio(getApplicationContext());
 
         txtUser = (TextView)findViewById(R.id.txtUsuari);
         txtPassword = (TextView)findViewById(R.id.txtPassword);
@@ -77,37 +87,23 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        usuari = txtUser.getText().toString();
-        password = txtPassword.getText().toString();
-        download = new DescarregarDades();
-        try{
-            download.execute(URL_DATA);
-        }catch(IllegalStateException ex) {
+        new DescarregarDades(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
     }
 
-    }
-
-    private void comprovaSessio(){
-        SharedPreferences prefs = this.getSharedPreferences("userdata",this.MODE_PRIVATE);
-        String usuariString = prefs.getString("userName",null);
-        String passwordString = prefs.getString("password",null);
-        if(usuariString!=null)entra(usuariString,passwordString);
-    }
-
-    private void entra(String usuari, String password){
-        Intent i = new Intent(this,ListFlats_Activity.class);
-        startActivity(i);
-        finish();
-    }
 
     class DescarregarDades extends AsyncTask<String,Void,ArrayList<users>>{
 
+        private String usuari;
+        private String contrasenya;
+
+        DescarregarDades(String usuari, String contrasenya){
+            this.usuari = usuari;
+            this.contrasenya = contrasenya;
+        }
 
 
         @Override
         protected void onPreExecute(){super.onPreExecute();}
-
-
 
         @Override
         protected ArrayList<users> doInBackground(String... params) {
@@ -115,17 +111,15 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpostreq = new HttpPost(URL_DATA);
             HttpResponse httpresponse = null;
-            String usuari = txtUser.getText().toString();
-            String password = txtPassword.getText().toString();
             try{
-                List<NameValuePair> parametres = new ArrayList<NameValuePair>(1);
-                parametres.add(new BasicNameValuePair("peticio","select"));
-                //parametres.add(new BasicNameValuePair("userName",usuari));
-                //parametres.add(new BasicNameValuePair("password",password));
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(3);
+                parametres.add(new BasicNameValuePair("peticio","inserir"));
+                parametres.add(new BasicNameValuePair("nameUsers",usuari));
+                parametres.add(new BasicNameValuePair("passwordUser",contrasenya));
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
-                llistaUsers = tractarJSON(responseText);
+                //llistaUsers = tractarJSON(responseText);
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -141,7 +135,19 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(ArrayList<users> llista){
-            dades = llista;
+            sessioUsuari.createUserLoginSession(
+                    usuari,contrasenya
+            );
+
+            Intent act = new Intent(getApplicationContext(), ListFlats_Activity.class);
+            act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+
+
+            //Add new Flag to start new Activity
+            act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(act);
+            finish();
 
         }
 
@@ -149,6 +155,10 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             Gson convert = new Gson();
             return convert.fromJson(json,new TypeToken<ArrayList<users>>(){}.getType());
         }
+            }
+    public void err_login() {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(200);
     }
 
 
