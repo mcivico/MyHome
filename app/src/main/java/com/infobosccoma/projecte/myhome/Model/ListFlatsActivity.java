@@ -1,26 +1,23 @@
-package com.infobosccoma.projecte.myhome;
+package com.infobosccoma.projecte.myhome.Model;
 
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
+import com.infobosccoma.projecte.myhome.R;
 
-
-public class ListFlats_Activity extends Activity {
+public class ListFlatsActivity extends ActionBarActivity {
 
     private UsuariSessio sessioUsuari;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_flats_);
+        setContentView(R.layout.activity_list_flats);
 
         sessioUsuari = new UsuariSessio(getApplicationContext());
-
 
         if(!sessioUsuari.checkLogin()){
             finish();
@@ -31,7 +28,7 @@ public class ListFlats_Activity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_list_flats_, menu);
+        getMenuInflater().inflate(R.menu.menu_list_flats, menu);
         return true;
     }
 

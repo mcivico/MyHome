@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
+import com.infobosccoma.projecte.myhome.Model.ListFlatsActivity;
 import com.infobosccoma.projecte.myhome.Model.users;
 
 import org.apache.http.HttpResponse;
@@ -139,7 +140,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                     usuari,contrasenya
             );
 
-            Intent act = new Intent(getApplicationContext(), ListFlats_Activity.class);
+            Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
             act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 
