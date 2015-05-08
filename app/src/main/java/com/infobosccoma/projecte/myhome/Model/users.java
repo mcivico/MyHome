@@ -5,11 +5,11 @@ package com.infobosccoma.projecte.myhome.Model;
  */
 public class users {
 
-    private String nameUsers, passwordUsers;
+    private String nameUsers, passwordUser;
 
-    public users(String nameUsers, String passwordUsers) {
+    public users(String nameUsers, String passwordUser) {
         this.nameUsers = nameUsers;
-        this.passwordUsers = passwordUsers;
+        this.passwordUser = passwordUser;
     }
 
     public String getNameUsers() {
@@ -21,10 +21,10 @@ public class users {
     }
 
     public String getPasswordUsers() {
-        return passwordUsers;
+        return passwordUser;
     }
 
     public void setPasswordUsers(String passwordUsers) {
-        this.passwordUsers = passwordUsers;
+        this.passwordUser = passwordUsers;
     }
 }
