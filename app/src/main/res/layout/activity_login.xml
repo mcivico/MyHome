@@ -64,19 +64,27 @@
         android:layout_height="50dp"></LinearLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="70dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
+        android:layout_marginRight="15dp"
+        android:layout_weight="0.91">
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="#01A9DB"
-            android:text="Registrar-se"
+            android:text="Log In"
             android:id="@+id/btnLogin"
             android:textAlignment="center"
             android:singleLine="false" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registrar-se"
+            android:id="@+id/btnRegistra"
+            android:layout_marginTop="30dp" />
     </LinearLayout>
 </LinearLayout>

@@ -58,7 +58,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         txtUser = (TextView)findViewById(R.id.txtUsuari);
         txtPassword = (TextView)findViewById(R.id.txtPassword);
 
-        btnRegistrar = (Button)findViewById(R.id.btnLogin);
+        btnRegistrar = (Button)findViewById(R.id.btnRegistra);
         btnRegistrar.setOnClickListener(this);
     }
 
