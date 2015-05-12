@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 
-import com.infobosccoma.projecte.myhome.Model.ListFlatsActivity;
-
 
 public class SplashActivity extends ActionBarActivity {
 

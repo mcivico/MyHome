@@ -11,15 +11,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
-import com.infobosccoma.projecte.myhome.Model.ListFlatsActivity;
 import com.infobosccoma.projecte.myhome.Model.users;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -27,7 +28,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +46,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
     UsuariSessio sessioUsuari;
 
     TextView txtUser, txtPassword;
-    Button btnRegistrar;
+    Button btnRegistrar, btnLogin;
 
     private ArrayList<users> dades;
 
@@ -61,6 +65,9 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
         btnRegistrar = (Button)findViewById(R.id.btnRegistra);
         btnRegistrar.setOnClickListener(this);
+
+        btnLogin = (Button)findViewById(R.id.btnLogin);
+        btnLogin.setOnClickListener(this);
     }
 
 
@@ -88,14 +95,29 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        new DescarregarDades(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
+        switch (v.getId()){
+            case R.id.btnRegistra:
+                String m = txtUser.getText().toString();
+                if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
+                    new DescarregarDades(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
+                else
+                    Toast.makeText(Login.this, "Els camps no poden estar buits", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btnLogin:
+
+
+        }
+
     }
 
 
-    class DescarregarDades extends AsyncTask<String,Void,ArrayList<users>>{
+    class DescarregarDades extends AsyncTask<String,Void,Boolean>{
 
         private String usuari;
         private String contrasenya;
+
+        Boolean resultat = false;
+        int codiEstat =0;
 
         DescarregarDades(String usuari, String contrasenya){
             this.usuari = usuari;
@@ -107,7 +129,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         protected void onPreExecute(){super.onPreExecute();}
 
         @Override
-        protected ArrayList<users> doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) {
             ArrayList<users> llistaUsers = null;
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpostreq = new HttpPost(URL_DATA);
@@ -121,6 +143,8 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 httpresponse = httpClient.execute(httpostreq);
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
                 //llistaUsers = tractarJSON(responseText);
+                StatusLine estat = httpresponse.getStatusLine();
+                codiEstat = estat.getStatusCode();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -131,24 +155,33 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             }
 
 
-            return llistaUsers;
+            return resultat;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<users> llista){
-            sessioUsuari.createUserLoginSession(
-                    usuari,contrasenya
-            );
+        protected void onPostExecute(Boolean resultat){
+            if(codiEstat == 200){
+                sessioUsuari.createUserLoginSession(
+                        usuari,contrasenya
+                );
 
-            Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
-            act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
+                act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 
 
-            //Add new Flag to start new Activity
-            act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(act);
-            finish();
+                //Add new Flag to start new Activity
+                act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(act);
+                finish();
+            }
+            else{
+                Toast.makeText(Login.this, "No s'ha pogut registrar!", Toast.LENGTH_LONG).show();
+                txtUser.requestFocus();
+                txtUser.setText(null);
+                txtPassword.setText(null);
+            }
+
 
         }
 
@@ -157,6 +190,34 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             return convert.fromJson(json,new TypeToken<ArrayList<users>>(){}.getType());
         }
             }
+
+    private boolean comprovaAcces(InputStream is) {
+        String rLine = "";
+        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+        boolean retorn = false;
+
+        try {
+            while ((rLine = rd.readLine()) != null) {
+                if (rLine.substring(14, 22).equals("correcte"))
+                {
+                    retorn = true;
+                }
+                else
+                {
+                    retorn = false;
+                }
+            }
+
+        }
+
+        catch (IOException e) {
+            // e.printStackTrace();
+            retorn = false;
+        }
+
+        return retorn;
+
+    }
     public void err_login() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(200);

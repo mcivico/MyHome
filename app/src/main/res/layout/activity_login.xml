@@ -39,7 +39,8 @@
             android:id="@+id/txtUsuari"
             android:layout_weight="1"
             android:selectAllOnFocus="false"
-            android:text="Usuari" />
+            android:hint="Usuari"
+             />
     </LinearLayout>
 
     <LinearLayout
@@ -55,7 +56,7 @@
             android:inputType="textPassword"
             android:ems="10"
             android:id="@+id/txtPassword"
-            android:text="Pasword" />
+            android:hint="Contrasenya" />
     </LinearLayout>
 
     <LinearLayout
