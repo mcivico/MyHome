@@ -39,7 +39,7 @@ import java.util.List;
 
 public class NewFlatActivity extends ActionBarActivity implements View.OnClickListener {
 
-    private static final String URL_DATA = "http://52.16.108.57/scripts/users.php";
+    private static final String URL_DATA = "http://52.16.108.57/scripts/flat.php";
 
     private DescarregarDades download;
 
