@@ -15,5 +15,6 @@
     <string name="colorBackground">#D8D8D8</string>
     <string name="title_activity_new_flat">NewFlatActivity</string>
     <string name="title_activity_list_flats">ListFlatsActivity</string>
+    <string name="title_activity_activity_map">Map</string>
 
 </resources>
