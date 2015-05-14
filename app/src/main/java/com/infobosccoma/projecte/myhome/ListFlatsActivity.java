@@ -85,7 +85,7 @@ public class ListFlatsActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessioUsuari.logoutUser();
-                        Intent login = new Intent(getApplicationContext(),Login.class);
+                        Intent login = new Intent(getApplicationContext(),activity_map.class);
                         startActivity(login);
                     }
                 });
