@@ -36,6 +36,7 @@ public class UsuariSessio {
     }
 
 
+
     public void createUserLoginSession(String name, String passwd){
         editor.putBoolean(IS_USER_LOGIN,true);
 
@@ -92,6 +93,7 @@ public class UsuariSessio {
     public boolean isUserLoggedIn() {
         return preferencies.getBoolean(IS_USER_LOGIN, false);
     }
+
 
 
 

@@ -34,16 +34,23 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class NewFlatActivity extends ActionBarActivity implements View.OnClickListener {
 
-    private static final String URL_DATA = "http://52.16.108.57/scripts/users.php";
+    private static final String URL_DATA = "http://52.16.108.57/scripts/flat.php";
 
     private DescarregarDades download;
 
     private UsuariSessio sessioUsuari;
+
+    String nomUsuari, passwordUsuari;
+
+    HashMap<String,String> usuari;
 
     TextView txtNomPis, txtPasswdPis;
     Button btnNewFlat;
@@ -59,6 +66,14 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
 
         btnNewFlat = (Button)findViewById(R.id.btnNewFlat);
         btnNewFlat.setOnClickListener(this);
+
+        usuari = sessioUsuari.getUserDetails();
+        Iterator it = usuari.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry e = (Map.Entry)it.next();
+            if(e.getKey().equals("name"))
+                nomUsuari = e.getValue().toString();
+        }
     }
 
 
@@ -134,6 +149,9 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
                 parametres.add(new BasicNameValuePair("peticio","inserir"));
                 parametres.add(new BasicNameValuePair("nameFlat",nomPis));
                 parametres.add(new BasicNameValuePair("passwordFlat",passwd));
+                parametres.add(new BasicNameValuePair("nameUserFlat",nomUsuari));
+                //parametres.add(new BasicNameValuePair("nameUserFlat", sessioUsuari.getClass().getName().toString()));
+
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
                 String responseText = EntityUtils.toString(httpresponse.getEntity());

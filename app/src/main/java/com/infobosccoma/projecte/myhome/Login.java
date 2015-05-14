@@ -13,8 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
 import com.infobosccoma.projecte.myhome.Model.users;
 
@@ -26,9 +24,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,12 +149,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 parametres.add(new BasicNameValuePair("passwordUser",contrasenya));
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
-                String responseText = EntityUtils.toString(httpresponse.getEntity());
-                //llistaUsers = tractarJSON(responseText);
-                StatusLine estat = httpresponse.getStatusLine();
-
-                codiEstat = estat.getStatusCode();
-
+                resultat = comprovaAcces(httpresponse.getEntity().getContent());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (ClientProtocolException e) {
@@ -169,7 +164,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(Boolean resultat){
-            if(codiEstat == 200){
+            if(resultat){
                 sessioUsuari.createUserLoginSession(
                         usuari,contrasenya
                 );
@@ -186,7 +181,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             }
             else{
                 err_login();
-                Toast.makeText(Login.this, "No s'ha pogut registrar!", Toast.LENGTH_LONG).show();
+                Toast.makeText(Login.this, "Usuari no vàlid!", Toast.LENGTH_LONG).show();
                 txtUser.requestFocus();
                 txtUser.setText(null);
                 txtPassword.setText(null);
@@ -195,9 +190,30 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
         }
 
-        private ArrayList<users> tractarJSON(String json){
-            Gson convert = new Gson();
-            return convert.fromJson(json,new TypeToken<ArrayList<users>>(){}.getType());
+        private boolean comprovaAcces(InputStream is) {
+            String rLine = "";
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            boolean retorn = false;
+
+            try {
+                while ((rLine = rd.readLine()) != null) {
+                    if (rLine.equals("true")) {
+                        retorn = true;
+                    } else {
+                        retorn = false;
+                    }
+                }
+
+
+            }
+
+            catch (IOException e) {
+                // e.printStackTrace();
+                retorn = false;
+            }
+
+            return retorn;
+
         }
             }
 
@@ -207,7 +223,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         vibrator.vibrate(200);
     }
 
-    class ValidaLogin extends AsyncTask<String,Void,users>{
+    class ValidaLogin extends AsyncTask<String,Void,Boolean>{
 
         private String usuari;
         private String contrasenya;
@@ -225,8 +241,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         protected void onPreExecute(){super.onPreExecute();}
 
         @Override
-        protected users doInBackground(String... params) {
-            users u = null;
+        protected Boolean doInBackground(String... params) {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpostreq = new HttpPost(URL_DATA);
             HttpResponse httpresponse = null;
@@ -237,8 +252,8 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 parametres.add(new BasicNameValuePair("passwordUser",contrasenya));
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
-                String responseText = EntityUtils.toString(httpresponse.getEntity());
-                u = tractarJSON(responseText);
+                resultat = comprovaAcces(httpresponse.getEntity().getContent());
+
                 StatusLine estat = httpresponse.getStatusLine();
                 codiEstat = estat.getStatusCode();
 
@@ -251,14 +266,14 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             }
 
 
-            return u;
+            return resultat;
         }
 
         @Override
-        protected void onPostExecute(users user){
-            if(txtUser.getText().toString().equals(user.getNameUsers())&& txtPassword.getText().toString().equals(user.getPasswordUsers())){
+        protected void onPostExecute(Boolean resultat){
+            if(resultat){
                 sessioUsuari.createUserLoginSession(
-                        user.getNameUsers(),user.getPasswordUsers()
+                        usuari,contrasenya
                 );
 
                 Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
@@ -273,7 +288,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
             }
             else{
                 err_login();
-                Toast.makeText(Login.this, "No s'ha pogut registrar!", Toast.LENGTH_LONG).show();
+                Toast.makeText(Login.this, "Usuari o contrasenya incorrectes!!", Toast.LENGTH_LONG).show();
                 txtUser.requestFocus();
                 txtUser.setText(null);
                 txtPassword.setText(null);
@@ -282,12 +297,34 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
 
         }
 
-        private users tractarJSON(String json){
-            Gson convert = new Gson();
-            return convert.fromJson(json,new TypeToken<ArrayList<users>>(){}.getType());
-        }
-    }
+        private boolean comprovaAcces(InputStream is) {
+            String rLine = "";
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            boolean retorn = false;
 
+            try {
+                while ((rLine = rd.readLine()) != null) {
+                    if (rLine.substring(14, 22).equals("correcte")) {
+                        retorn = true;
+                    } else {
+                        retorn = false;
+                    }
+                }
+
+
+            }
+
+            catch (IOException e) {
+                // e.printStackTrace();
+                retorn = false;
+            }
+
+            return retorn;
+
+        }
+
+
+    }
 
 
 
