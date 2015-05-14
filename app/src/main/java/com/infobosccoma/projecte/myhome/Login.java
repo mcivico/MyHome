@@ -28,10 +28,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +97,21 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 String m = txtUser.getText().toString();
                 if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                     new DescarregarDades(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
-                else
+                else{
+                    err_login();
                     Toast.makeText(Login.this, "Els camps no poden estar buits", Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case R.id.btnLogin:
+                if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
+                    new ValidaLogin(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
+                else{
+                    err_login();
+                    Toast.makeText(Login.this, "Els camps no poden estar buits", Toast.LENGTH_LONG).show();
+                }
+
+                break;
 
 
         }
@@ -144,6 +152,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
                 //llistaUsers = tractarJSON(responseText);
                 StatusLine estat = httpresponse.getStatusLine();
+
                 codiEstat = estat.getStatusCode();
 
             } catch (UnsupportedEncodingException e) {
@@ -176,6 +185,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 finish();
             }
             else{
+                err_login();
                 Toast.makeText(Login.this, "No s'ha pogut registrar!", Toast.LENGTH_LONG).show();
                 txtUser.requestFocus();
                 txtUser.setText(null);
@@ -191,37 +201,93 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         }
             }
 
-    private boolean comprovaAcces(InputStream is) {
-        String rLine = "";
-        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-        boolean retorn = false;
 
-        try {
-            while ((rLine = rd.readLine()) != null) {
-                if (rLine.substring(14, 22).equals("correcte"))
-                {
-                    retorn = true;
-                }
-                else
-                {
-                    retorn = false;
-                }
-            }
-
-        }
-
-        catch (IOException e) {
-            // e.printStackTrace();
-            retorn = false;
-        }
-
-        return retorn;
-
-    }
     public void err_login() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(200);
     }
+
+    class ValidaLogin extends AsyncTask<String,Void,users>{
+
+        private String usuari;
+        private String contrasenya;
+
+        Boolean resultat = false;
+        int codiEstat =0;
+
+        ValidaLogin(String usuari, String contrasenya){
+            this.usuari = usuari;
+            this.contrasenya = contrasenya;
+        }
+
+
+        @Override
+        protected void onPreExecute(){super.onPreExecute();}
+
+        @Override
+        protected users doInBackground(String... params) {
+            users u = null;
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpostreq = new HttpPost(URL_DATA);
+            HttpResponse httpresponse = null;
+            try{
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(3);
+                parametres.add(new BasicNameValuePair("peticio","valida"));
+                parametres.add(new BasicNameValuePair("nameUsers",usuari));
+                parametres.add(new BasicNameValuePair("passwordUser",contrasenya));
+                httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                httpresponse = httpClient.execute(httpostreq);
+                String responseText = EntityUtils.toString(httpresponse.getEntity());
+                u = tractarJSON(responseText);
+                StatusLine estat = httpresponse.getStatusLine();
+                codiEstat = estat.getStatusCode();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return u;
+        }
+
+        @Override
+        protected void onPostExecute(users user){
+            if(txtUser.getText().toString().equals(user.getNameUsers())&& txtPassword.getText().toString().equals(user.getPasswordUsers())){
+                sessioUsuari.createUserLoginSession(
+                        user.getNameUsers(),user.getPasswordUsers()
+                );
+
+                Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
+                act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+
+
+                //Add new Flag to start new Activity
+                act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(act);
+                finish();
+            }
+            else{
+                err_login();
+                Toast.makeText(Login.this, "No s'ha pogut registrar!", Toast.LENGTH_LONG).show();
+                txtUser.requestFocus();
+                txtUser.setText(null);
+                txtPassword.setText(null);
+            }
+
+
+        }
+
+        private users tractarJSON(String json){
+            Gson convert = new Gson();
+            return convert.fromJson(json,new TypeToken<ArrayList<users>>(){}.getType());
+        }
+    }
+
 
 
 

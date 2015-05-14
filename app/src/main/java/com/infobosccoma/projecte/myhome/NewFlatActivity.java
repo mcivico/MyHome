@@ -23,6 +23,7 @@ import com.infobosccoma.projecte.myhome.Model.users;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -109,6 +110,8 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
         private String nomPis;
         private String passwd;
 
+        int codiEstat =0;
+
         Boolean resultat = false;
 
         DescarregarDades(String usuari, String contrasenya){
@@ -134,10 +137,11 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
-                //llistaUsers = tractarJSON(responseText);
+                StatusLine estat = httpresponse.getStatusLine();
+                codiEstat = estat.getStatusCode();
 
-                //TODO  no funciona
-                resultat = true;
+                //HttpURLConnection.
+
 
                 //resultat = comprovaAcces(httpresponse.getEntity().getContent());
 
@@ -157,8 +161,8 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
 
         @Override
         protected void onPostExecute(Boolean resultat){
-            if(resultat == true){
-
+            if(codiEstat == 200){
+                Toast.makeText(NewFlatActivity.this, "Pis Creat!!", Toast.LENGTH_LONG).show();
 
                 Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
                 act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -33,17 +33,11 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Nom del Pis:"
-            android:id="@+id/textView" />
-
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/txtNameFlat"
+            android:hint="Nom del pis"
             android:layout_weight="1"
             android:selectAllOnFocus="false" />
     </LinearLayout>
@@ -56,18 +50,12 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="10dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Contrasenya del pis:"
-            android:id="@+id/textView2" />
-
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPassword"
             android:ems="10"
+            android:hint="Contrasenya"
             android:id="@+id/txtPasswdFlat" />
     </LinearLayout>
 
