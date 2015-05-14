@@ -9,7 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,7 +43,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
     UsuariSessio sessioUsuari;
 
     TextView txtUser, txtPassword;
-    Button btnRegistrar, btnLogin;
+    ImageButton btnRegistrar, btnLogin;
 
     private ArrayList<users> dades;
 
@@ -60,10 +60,10 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         txtUser = (TextView)findViewById(R.id.txtUsuari);
         txtPassword = (TextView)findViewById(R.id.txtPassword);
 
-        btnRegistrar = (Button)findViewById(R.id.btnRegistra);
+        btnRegistrar = (ImageButton)findViewById(R.id.crearCompte);
         btnRegistrar.setOnClickListener(this);
 
-        btnLogin = (Button)findViewById(R.id.btnLogin);
+        btnLogin = (ImageButton)findViewById(R.id.Login);
         btnLogin.setOnClickListener(this);
     }
 
@@ -93,7 +93,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.btnRegistra:
+            case R.id.crearCompte:
                 String m = txtUser.getText().toString();
                 if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                     new DescarregarDades(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
@@ -103,7 +103,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 }
 
                 break;
-            case R.id.btnLogin:
+            case R.id.Login:
                 if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                     new ValidaLogin(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
                 else{

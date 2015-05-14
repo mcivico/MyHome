@@ -70,23 +70,26 @@
         android:layout_height="70dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_weight="0.91">
+        android:layout_weight="0.91"
+        android:weightSum="1"
+        android:id="@+id/botonsLogin"
+        android:background="#D8D8D8">
 
-        <Button
+        <ImageButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#01A9DB"
-            android:text="Log In"
-            android:id="@+id/btnLogin"
-            android:textAlignment="center"
-            android:singleLine="false" />
+            android:layout_height="50dp"
+            android:id="@+id/Login"
+            android:focusableInTouchMode="true"
+            android:src="@drawable/ic_btnlogin"
+            android:background="#D8D8D8"
+            android:layout_weight="0.94" />
 
-        <Button
+        <ImageButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#01A9dB"
-            android:text="Registrar-se"
-            android:id="@+id/btnRegistra"
-            android:layout_marginTop="20dp" />
+            android:layout_height="48dp"
+            android:id="@+id/crearCompte"
+            android:src="@drawable/ic_btnregistre"
+            android:background="#D8D8D8" />
+
     </LinearLayout>
 </LinearLayout>
