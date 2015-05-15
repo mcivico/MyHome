@@ -1,15 +1,13 @@
 package com.infobosccoma.projecte.myhome;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Login extends ActionBarActivity implements View.OnClickListener {
+public class Login extends Activity implements View.OnClickListener {
 
     private static final String URL_DATA = "http://52.16.108.57/scripts/users.php";
 
@@ -43,7 +41,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
     UsuariSessio sessioUsuari;
 
     TextView txtUser, txtPassword;
-    Button btnRegistrar, btnLogin;
+    ImageButton btnRegistrar, btnLogin;
 
     private ArrayList<users> dades;
 
@@ -60,40 +58,21 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
         txtUser = (TextView)findViewById(R.id.txtUsuari);
         txtPassword = (TextView)findViewById(R.id.txtPassword);
 
-        btnRegistrar = (Button)findViewById(R.id.btnRegistra);
+        btnRegistrar = (ImageButton)findViewById(R.id.crearCompte);
         btnRegistrar.setOnClickListener(this);
 
-        btnLogin = (Button)findViewById(R.id.btnLogin);
+        btnLogin = (ImageButton)findViewById(R.id.Login);
         btnLogin.setOnClickListener(this);
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.btnRegistra:
+            case R.id.crearCompte:
                 String m = txtUser.getText().toString();
                 if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                     new DescarregarDades(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
@@ -103,7 +82,7 @@ public class Login extends ActionBarActivity implements View.OnClickListener {
                 }
 
                 break;
-            case R.id.btnLogin:
+            case R.id.Login:
                 if(!txtUser.getText().toString().equals("") && !txtPassword.getText().toString().equals(""))
                     new ValidaLogin(txtUser.getText().toString(),txtPassword.getText().toString()).execute();
                 else{

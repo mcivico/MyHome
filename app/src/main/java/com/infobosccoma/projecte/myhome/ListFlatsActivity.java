@@ -27,18 +27,26 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ListFlatsActivity extends ActionBarActivity {
 
-    private UsuariSessio sessioUsuari;
 
-     private static final String URL_DATA = "http://52.16.108.57/scripts/flat.php";
+    private static final String URL_DATA = "http://52.16.108.57/scripts/flat_user.php";
 
     private DescarregarDades download;
 
     private ListView listViewPisos;
     private ArrayList<flat> llistaPisos;
+
+    private UsuariSessio sessioUsuari;
+
+    String nomUsuari;
+
+    HashMap<String, String> usuari;
 
     final static int ADD_PIS = 1;
 
@@ -46,12 +54,17 @@ public class ListFlatsActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_flats);
-
+        usuari = sessioUsuari.getUserDetails();
+        Iterator it = usuari.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            if (e.getKey().equals("name"))
+                nomUsuari = e.getValue().toString();
+        }
         sessioUsuari = new UsuariSessio(getApplicationContext());
-        if(!sessioUsuari.checkLogin()){
+        if (!sessioUsuari.checkLogin()) {
             finish();
         }
-
 
 
     }
@@ -69,23 +82,23 @@ public class ListFlatsActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        
-        switch  (item.getItemId()){
+
+        switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
             case R.id.menu_addFlat:
-                Intent nouPis = new Intent(this,NewFlatActivity.class);
-                startActivityForResult(new Intent(getBaseContext(),NewFlatActivity.class),ADD_PIS);
+                Intent nouPis = new Intent(this, NewFlatActivity.class);
+                startActivityForResult(new Intent(getBaseContext(), NewFlatActivity.class), ADD_PIS);
                 return true;
             case R.id.menu_logout:
                 AlertDialog dialog = new AlertDialog.Builder(this).create();
                 dialog.setTitle("Log Out!!");
                 dialog.setMessage("Estas segur de fer el Log Out?");
-                dialog.setButton("Ok", new DialogInterface.OnClickListener(){
+                dialog.setButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessioUsuari.logoutUser();
-                        Intent login = new Intent(getApplicationContext(),activity_map.class);
+                        Intent login = new Intent(getApplicationContext(), activity_map.class);
                         startActivity(login);
                     }
                 });
@@ -103,8 +116,8 @@ public class ListFlatsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode==ADD_PIS && resultCode == RESULT_OK){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_PIS && resultCode == RESULT_OK) {
             flat pis;
             pis = (flat) data.getExtras().getSerializable("nouArticle");
             //segConv.save(article);
@@ -113,10 +126,12 @@ public class ListFlatsActivity extends ActionBarActivity {
     }
 
 
-    class DescarregarDades extends AsyncTask<String,Void, ArrayList<flat>>{
+    class DescarregarDades extends AsyncTask<String, Void, ArrayList<flat>> {
 
         @Override
-        protected void onPreExecute(){super.onPreExecute();}
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
         @Override
         protected ArrayList<flat> doInBackground(String... params) {
@@ -124,9 +139,10 @@ public class ListFlatsActivity extends ActionBarActivity {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpreq = new HttpPost(URL_DATA);
             HttpResponse httpresponse = null;
-            try{
+            try {
                 List<NameValuePair> parametres = new ArrayList<NameValuePair>(1);
-                parametres.add(new BasicNameValuePair("peticio","select"));
+                parametres.add(new BasicNameValuePair("peticio", "validar"));
+                parametres.add(new BasicNameValuePair("nameUsers",usuari));
                 httpreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpreq);
                 String responseText = EntityUtils.toString(httpreq.getEntity());
@@ -144,15 +160,14 @@ public class ListFlatsActivity extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<flat> llista){
+        protected void onPostExecute(ArrayList<flat> llista) {
             llistaPisos = llista;
         }
 
-        private ArrayList<flat> tractarJSON(String json){
+        private ArrayList<flat> tractarJSON(String json) {
             Gson convert = new Gson();
-            return convert.fromJson(json,new TypeToken<ArrayList<flat>>(){}.getType());
+            return convert.fromJson(json, new TypeToken<ArrayList<flat>>() {
+            }.getType());
         }
     }
-
-
 }
