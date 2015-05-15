@@ -54,14 +54,14 @@ public class ListFlatsActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_flats);
+        sessioUsuari = new UsuariSessio(getApplicationContext());
         usuari = sessioUsuari.getUserDetails();
         Iterator it = usuari.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry e = (Map.Entry) it.next();
-            if (e.getKey().equals("name"))
+            if (e.getKey().equals("name")&& e.getValue()!=null)
                 nomUsuari = e.getValue().toString();
         }
-        sessioUsuari = new UsuariSessio(getApplicationContext());
         if (!sessioUsuari.checkLogin()) {
             finish();
         }
@@ -142,7 +142,7 @@ public class ListFlatsActivity extends ActionBarActivity {
             try {
                 List<NameValuePair> parametres = new ArrayList<NameValuePair>(1);
                 parametres.add(new BasicNameValuePair("peticio", "validar"));
-                parametres.add(new BasicNameValuePair("nameUsers",usuari));
+                parametres.add(new BasicNameValuePair("nameUsers",nomUsuari));
                 httpreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpreq);
                 String responseText = EntityUtils.toString(httpreq.getEntity());
