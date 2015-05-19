@@ -4,4 +4,8 @@
     tools:context="com.infobosccoma.projecte.myhome.MainMenuActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/menu_logout"
+        android:icon="@android:drawable/btn_dialog"
+        android:title="Log Out"
+        app:showAsAction="always"/>
 </menu>

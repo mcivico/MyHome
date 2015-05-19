@@ -1,17 +1,26 @@
 package com.infobosccoma.projecte.myhome;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
+
 
 public class MainMenuActivity extends ActionBarActivity {
+
+    private UsuariSessio sessioUsuari;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        sessioUsuari = new UsuariSessio(getApplicationContext());
     }
 
 
@@ -27,12 +36,25 @@ public class MainMenuActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                return true;
+            case R.id.menu_logout:
+                AlertDialog dialog = new AlertDialog.Builder(this).create();
+                dialog.setTitle("Log Out!!");
+                dialog.setMessage("Estas segur de fer el Log Out?");
+                dialog.setButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sessioUsuari.logoutUser();
+                        Intent login = new Intent(getApplicationContext(), activity_map.class);
+                        startActivity(login);
+                    }
+                });
+                //dialog.setIcon();
+                dialog.show();
         }
+
 
         return super.onOptionsItemSelected(item);
     }

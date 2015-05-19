@@ -97,8 +97,6 @@ public class ListFlatsActivity extends ActionBarActivity {
             listViewPisos.setVisibility(listViewPisos.VISIBLE);
         }
 
-
-
         listViewPisos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -153,12 +151,6 @@ public class ListFlatsActivity extends ActionBarActivity {
                 //dialog.setIcon();
                 dialog.show();
 
-        }
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
