@@ -127,6 +127,8 @@ public class activity_map extends FragmentActivity {
                     builder.include(posicio);
                 }
 
+                builder.include(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()));
+
 
                 //LatLngBounds bounds = new LatLngBounds();
                 LatLngBounds tmpBounds = builder.build();

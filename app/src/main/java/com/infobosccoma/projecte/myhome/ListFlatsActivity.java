@@ -59,6 +59,7 @@ public class ListFlatsActivity extends ActionBarActivity {
     HashMap<String, String> usuari;
 
     final static int ADD_PIS = 1;
+    final static int SEARCH_PIS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +86,7 @@ public class ListFlatsActivity extends ActionBarActivity {
 
     private void Adapter(){
         listViewPisos = (ListView)findViewById(R.id.llistaPisos);
-        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, llistaPisos);
+        adapter = new ArrayAdapter<flat>(this,android.R.layout.simple_list_item_1, llistaPisos);
         listViewPisos.setAdapter(adapter);
 
         if(llistaPisos.size() == 0){
@@ -136,6 +137,10 @@ public class ListFlatsActivity extends ActionBarActivity {
                 Intent nouPis = new Intent(this, NewFlatActivity.class);
                 startActivityForResult(new Intent(getBaseContext(), NewFlatActivity.class), ADD_PIS);
                 return true;
+            case R.id.menu_serachFlat:
+                Intent buscaPis = new Intent(this, BuscarPis.class);
+                startActivityForResult(new Intent(getBaseContext(), BuscarPis.class), SEARCH_PIS);
+                break;
             case R.id.menu_logout:
                 AlertDialog dialog = new AlertDialog.Builder(this).create();
                 dialog.setTitle("Log Out!!");
@@ -144,12 +149,13 @@ public class ListFlatsActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessioUsuari.logoutUser();
-                        Intent login = new Intent(getApplicationContext(), activity_map.class);
+                        Intent login = new Intent(getApplicationContext(), Login.class);
                         startActivity(login);
                     }
                 });
                 //dialog.setIcon();
                 dialog.show();
+                break;
 
         }
 
@@ -157,12 +163,14 @@ public class ListFlatsActivity extends ActionBarActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_PIS && resultCode == RESULT_OK) {
-            flat pis;
+        if ((requestCode == ADD_PIS || requestCode == SEARCH_PIS)&& resultCode == RESULT_OK) {
+            /*flat pis;
             pis = (flat) data.getExtras().getSerializable("nouArticle");
             //segConv.save(article);
-            //refreshData();
+            //refreshData();*/
+            new DescarregarDades().execute();
         }
+
     }
 
 
@@ -182,7 +190,7 @@ public class ListFlatsActivity extends ActionBarActivity {
             try{
                 List<NameValuePair> parametres = new ArrayList<NameValuePair>(2);
                 parametres.add(new BasicNameValuePair("peticio","valida"));
-                parametres.add(new BasicNameValuePair("nameUserFlat","mcivico8"));
+                parametres.add(new BasicNameValuePair("nameUserFlat",nomUsuari));
 
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
@@ -206,11 +214,6 @@ public class ListFlatsActivity extends ActionBarActivity {
 
             llistaPisos = llista;
             Adapter();
-
-
-
-
-
         }
 
         private ArrayList<flat> tractarJSON(String json) {

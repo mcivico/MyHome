@@ -157,14 +157,6 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
                 StatusLine estat = httpresponse.getStatusLine();
                 codiEstat = estat.getStatusCode();
-
-                //HttpURLConnection.
-
-
-                //resultat = comprovaAcces(httpresponse.getEntity().getContent());
-
-
-
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (ClientProtocolException e) {
@@ -179,14 +171,10 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
 
         @Override
         protected void onPostExecute(Boolean resultat){
-            if(codiEstat == 200){
+            if(codiEstat==200){
                 Toast.makeText(NewFlatActivity.this, "Pis Creat!!", Toast.LENGTH_LONG).show();
-
                 Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
                 act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-
-
                 //Add new Flag to start new Activity
                 act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(act);
@@ -206,6 +194,8 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
             Gson convert = new Gson();
             return convert.fromJson(json,new TypeToken<ArrayList<users>>(){}.getType());
         }
+
+
     }
     public void err_login() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

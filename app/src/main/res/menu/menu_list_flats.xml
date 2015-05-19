@@ -6,6 +6,10 @@
         android:icon="@android:drawable/ic_input_add"
         android:title="Afegir Pis"
         app:showAsAction="always"/>
+    <item android:id="@+id/menu_serachFlat"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Busca Pis"
+        app:showAsAction="always"/>
 
     <item android:id="@+id/menu_logout"
         android:icon="@android:drawable/btn_dialog"

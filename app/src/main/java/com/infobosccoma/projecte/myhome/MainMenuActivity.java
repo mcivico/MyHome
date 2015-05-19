@@ -7,13 +7,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
 
 
-public class MainMenuActivity extends ActionBarActivity {
+public class MainMenuActivity extends ActionBarActivity implements View.OnClickListener {
 
     private UsuariSessio sessioUsuari;
+
+    ImageButton btnCompra, btnTasques, btnMapa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +25,15 @@ public class MainMenuActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main_menu);
 
         sessioUsuari = new UsuariSessio(getApplicationContext());
+
+        btnTasques = (ImageButton)findViewById(R.id.imgTasques);
+        btnTasques.setOnClickListener(this);
+
+        btnCompra = (ImageButton)findViewById(R.id.imgCompra);
+        btnCompra.setOnClickListener(this);
+
+        btnMapa = (ImageButton)findViewById(R.id.imgMapa);
+        btnMapa.setOnClickListener(this);
     }
 
 
@@ -47,7 +60,7 @@ public class MainMenuActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessioUsuari.logoutUser();
-                        Intent login = new Intent(getApplicationContext(), activity_map.class);
+                        Intent login = new Intent(getApplicationContext(), Login.class);
                         startActivity(login);
                     }
                 });
@@ -57,5 +70,23 @@ public class MainMenuActivity extends ActionBarActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.imgTasques:
+                Intent tasca = new Intent(getApplicationContext(),TasquesActivity.class);
+                startActivity(tasca);
+                break;
+            case R.id.imgCompra:
+                Intent compra = new Intent(getApplicationContext(),ShopActivity.class);
+                startActivity(compra);
+                break;
+            case R.id.imgMapa:
+                Intent mapa = new Intent(getApplicationContext(),activity_map.class);
+                startActivity(mapa);
+                break;
+        }
     }
 }
