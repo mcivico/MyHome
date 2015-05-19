@@ -8,10 +8,15 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.infobosccoma.projecte.myhome.Controller.FlatSessio;
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
 import com.infobosccoma.projecte.myhome.Model.flat;
 
@@ -38,13 +43,18 @@ public class ListFlatsActivity extends ActionBarActivity {
     private static final String URL_DATA = "http://52.16.108.57/scripts/flat_user.php";
 
     private DescarregarDades download;
+    private FlatSessio flatSessio;
 
     private ListView listViewPisos;
+    private TextView lblNoData;
     private ArrayList<flat> llistaPisos;
+
 
     private UsuariSessio sessioUsuari;
 
     String nomUsuari;
+
+    ArrayAdapter<flat> adapter;
 
     HashMap<String, String> usuari;
 
@@ -54,19 +64,57 @@ public class ListFlatsActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_flats);
+
+        flatSessio = new FlatSessio(getApplicationContext());
+
+        lblNoData = (TextView)findViewById(R.id.textView3);
         sessioUsuari = new UsuariSessio(getApplicationContext());
         usuari = sessioUsuari.getUserDetails();
         Iterator it = usuari.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry e = (Map.Entry) it.next();
-            if (e.getKey().equals("name")&& e.getValue()!=null)
+            if (e.getKey().equals("name")&& e.getValue() != null)
                 nomUsuari = e.getValue().toString();
         }
+
         if (!sessioUsuari.checkLogin()) {
             finish();
         }
+        new DescarregarDades().execute();
+    }
+
+    private void Adapter(){
+        listViewPisos = (ListView)findViewById(R.id.llistaPisos);
+        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, llistaPisos);
+        listViewPisos.setAdapter(adapter);
+
+        if(llistaPisos.size() == 0){
+            lblNoData.setText("No hi ha pisos");
+            lblNoData.setVisibility(lblNoData.VISIBLE);
+            listViewPisos.setVisibility(listViewPisos.INVISIBLE);
+        }
+        else{
+            listViewPisos.setVisibility(listViewPisos.VISIBLE);
+        }
 
 
+
+        listViewPisos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(getApplicationContext(),"Has apretat l'item"+position,Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
+                Bundle b = new Bundle();
+                b.putSerializable("flat",llistaPisos.get(position));
+                intent.putExtras(b);
+
+                flatSessio.createFlatSession(llistaPisos.get(position).toString());
+
+                startActivity(intent);
+
+            }
+        });
     }
 
 
@@ -135,33 +183,42 @@ public class ListFlatsActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList<flat> doInBackground(String... params) {
-            ArrayList<flat> llista = null;
+            ArrayList<flat> llistaPis = null;
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpreq = new HttpPost(URL_DATA);
+            HttpPost httpostreq = new HttpPost(URL_DATA);
             HttpResponse httpresponse = null;
-            try {
-                List<NameValuePair> parametres = new ArrayList<NameValuePair>(1);
-                parametres.add(new BasicNameValuePair("peticio", "validar"));
-                parametres.add(new BasicNameValuePair("nameUsers",nomUsuari));
-                httpreq.setEntity(new UrlEncodedFormEntity(parametres));
-                httpresponse = httpClient.execute(httpreq);
-                String responseText = EntityUtils.toString(httpreq.getEntity());
-                llista = tractarJSON(responseText);
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
+            try{
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(2);
+                parametres.add(new BasicNameValuePair("peticio","valida"));
+                parametres.add(new BasicNameValuePair("nameUserFlat","mcivico8"));
+
+                httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                httpresponse = httpClient.execute(httpostreq);
+                String responseText = EntityUtils.toString(httpresponse.getEntity());
+                llistaPis=tractarJSON(responseText);
+
+                String m = "";
             } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-
-            return llista;
+            return llistaPis;
         }
 
         @Override
         protected void onPostExecute(ArrayList<flat> llista) {
+
             llistaPisos = llista;
+            Adapter();
+
+
+
+
+
         }
 
         private ArrayList<flat> tractarJSON(String json) {

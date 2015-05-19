@@ -1,16 +1,39 @@
 package com.infobosccoma.projecte.myhome;
 
-import android.support.v4.app.FragmentActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.infobosccoma.projecte.myhome.Model.Pois;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class activity_map extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private static final String URL_DATA = "http://52.16.108.57/scripts/pois.php";
+
+    private ArrayList<Pois> dades;
+    private DescarregarDades download;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,21 +48,7 @@ public class activity_map extends FragmentActivity {
         setUpMapIfNeeded();
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
+
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
@@ -62,4 +71,73 @@ public class activity_map extends FragmentActivity {
     private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
-}
+
+    class DescarregarDades extends AsyncTask<String, Void, ArrayList<Pois>> {
+
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+        }
+
+
+        @Override
+        protected ArrayList<Pois> doInBackground(String... params) {
+            ArrayList<Pois> llistaPois = null;
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httppostreq = new HttpPost(URL_DATA);
+            HttpResponse httpresponse = null;
+
+            try{
+                    List<NameValuePair> parametres = new ArrayList<NameValuePair>(1);
+                    parametres.add(new BasicNameValuePair("peticio", "valida"));
+                    httppostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                    httpresponse = httpClient.execute(httppostreq);
+                    String responseText = EntityUtils.toString(httpresponse.getEntity());
+                    llistaPois = tractarJSON(responseText);
+
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return llistaPois;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Pois> llista) {
+            dades = llista;
+
+
+                LatLng augment = new LatLng(dades.get(0).getLatitude(),dades.get(0).getLongitude());
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+                for (int i = 0; i < dades.size(); i++) {
+                    Pois poi = dades.get(i);
+                    double lat = poi.getLatitude();
+                    double lng = poi.getLongitude();
+                    LatLng posicio = new LatLng(lat, lng);
+                    mMap.addMarker(new MarkerOptions()
+                            .position(posicio)
+                            .snippet(poi.getCity())
+                            .title(poi.getName()));
+                    builder.include(posicio);
+                }
+
+
+                //LatLngBounds bounds = new LatLngBounds();
+                LatLngBounds tmpBounds = builder.build();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tmpBounds, 200));
+            }
+
+
+        }
+
+        private ArrayList<Pois> tractarJSON(String json) {
+            Gson converter = new Gson();
+            return converter.fromJson(json, new TypeToken<ArrayList<Pois>>(){}.getType());
+        }
+    }
