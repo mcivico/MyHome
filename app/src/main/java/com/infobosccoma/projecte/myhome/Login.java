@@ -229,6 +229,7 @@ public class Login extends Activity implements View.OnClickListener {
                 parametres.add(new BasicNameValuePair("peticio","valida"));
                 parametres.add(new BasicNameValuePair("nameUsers",usuari));
                 parametres.add(new BasicNameValuePair("passwordUser",contrasenya));
+
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
                 resultat = comprovaAcces(httpresponse.getEntity().getContent());

@@ -18,5 +18,7 @@
     <string name="title_activity_activity_map">Map</string>
     <string name="title_activity_shop">ShopActivity</string>
     <string name="title_activity_maps_activity222">Map</string>
+    <string name="title_activity_new_task">NewTaskActivity</string>
+    <string name="title_activity_new_shop">NewShopActivity</string>
 
 </resources>

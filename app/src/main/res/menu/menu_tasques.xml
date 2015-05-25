@@ -2,6 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.infobosccoma.projecte.myhome.TasquesActivity">
+
+    <item android:id="@+id/menu_addTask"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="Afegir Tasca"
+        app:showAsAction="always"/>
+    <item android:id="@+id/menu_logout"
+        android:icon="@android:drawable/btn_dialog"
+        android:title="Log Out"
+        app:showAsAction="always"/>
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 

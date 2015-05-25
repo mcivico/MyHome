@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +30,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +45,7 @@ public class ListFlatsActivity extends ActionBarActivity {
 
 
     private static final String URL_DATA = "http://52.16.108.57/scripts/flat_user.php";
+    private static final String URL_DATA2 = "http://52.16.108.57/scripts/flat.php";
 
     private DescarregarDades download;
     private FlatSessio flatSessio;
@@ -84,6 +89,8 @@ public class ListFlatsActivity extends ActionBarActivity {
         new DescarregarDades().execute();
     }
 
+
+
     private void Adapter(){
         listViewPisos = (ListView)findViewById(R.id.llistaPisos);
         adapter = new ArrayAdapter<flat>(this,android.R.layout.simple_list_item_1, llistaPisos);
@@ -114,6 +121,20 @@ public class ListFlatsActivity extends ActionBarActivity {
 
             }
         });
+
+        listViewPisos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> p, View v, final int po, long id) {
+                String nomPis=llistaPisos.get(po).getNameFlat().toString();
+                new EliminarPis(nomPis).execute();
+
+                return true;
+            }
+        });
+
+
+
     }
 
 
@@ -221,5 +242,87 @@ public class ListFlatsActivity extends ActionBarActivity {
             return convert.fromJson(json, new TypeToken<ArrayList<flat>>() {
             }.getType());
         }
+    }
+
+    class EliminarPis extends AsyncTask<String, Void, Boolean> {
+
+        String nomPisE;
+        Boolean resultat;
+
+        EliminarPis(String nomPis){
+            this.nomPisE = nomPis;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpostreq = new HttpPost(URL_DATA2);
+            HttpResponse httpresponse = null;
+            try{
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(2);
+                parametres.add(new BasicNameValuePair("peticio","delete"));
+                parametres.add(new BasicNameValuePair("nameFlat",nomPisE));
+                parametres.add(new BasicNameValuePair("nameUserFlat",nomUsuari));
+                httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                httpresponse = httpClient.execute(httpostreq);
+                resultat = comprovaAcces(httpresponse.getEntity().getContent());
+
+                String m = "";
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return resultat;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean resultat) {
+            if(resultat){
+                Toast.makeText(ListFlatsActivity.this, "S'ha borrat el pis", Toast.LENGTH_SHORT).show();
+                new DescarregarDades().execute();
+            }
+            else{
+                Toast.makeText(ListFlatsActivity.this, "No s'ha pogut borrar el pis!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        private boolean comprovaAcces(InputStream is) {
+            String rLine = "";
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            boolean retorn = false;
+
+            try {
+                while ((rLine = rd.readLine()) != null) {
+                    if (rLine.substring(14, 22).equals("correcte")) {
+                        retorn = true;
+                    } else {
+                        retorn = false;
+                    }
+                }
+
+
+            }
+
+            catch (IOException e) {
+                // e.printStackTrace();
+                retorn = false;
+            }
+
+            return retorn;
+
+        }
+
+
     }
 }

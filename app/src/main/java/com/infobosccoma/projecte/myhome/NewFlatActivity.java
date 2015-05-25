@@ -172,7 +172,7 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(Boolean resultat){
             if(codiEstat==200){
-                Toast.makeText(NewFlatActivity.this, "Pis Creat!!", Toast.LENGTH_LONG).show();
+                Toast.makeText(NewFlatActivity.this, "Pis Creat!!", Toast.LENGTH_SHORT).show();
                 Intent act = new Intent(getApplicationContext(), ListFlatsActivity.class);
                 act.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 //Add new Flag to start new Activity
@@ -181,7 +181,7 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
                 finish();
             }
             else{
-                Toast.makeText(NewFlatActivity.this, "No s'ha pogut crear el pis!", Toast.LENGTH_LONG).show();
+                Toast.makeText(NewFlatActivity.this, "No s'ha pogut crear el pis!", Toast.LENGTH_SHORT).show();
                 txtNomPis.requestFocus();
                 txtNomPis.setText(null);
                 txtPasswdPis.setText(null);
