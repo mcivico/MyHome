@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -18,6 +19,7 @@ import com.infobosccoma.projecte.myhome.Controller.AdapterTask;
 import com.infobosccoma.projecte.myhome.Controller.FlatSessio;
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
 import com.infobosccoma.projecte.myhome.Model.Tasks;
+import com.infobosccoma.projecte.myhome.Model.users;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,7 +30,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,12 +45,16 @@ import java.util.Map;
 public class TasquesActivity extends ActionBarActivity {
 
     private static final String URL_DATA = "http://52.16.108.57/scripts/tasks.php";
+    private static final String URL_USERS = "http://52.16.108.57/scripts/users.php";
 
     private ListView listViewTasks;
     private ArrayList<Tasks> dades;
     private AdapterTask adapter;
 
+    private ArrayList<users> usuaris;
+
     private TextView tasca, encarregat;
+    private ProgressBar progresBar;
 
     private FlatSessio flatSessio;
     private String nomPis;
@@ -63,6 +72,7 @@ public class TasquesActivity extends ActionBarActivity {
 
         tasca = (TextView)findViewById(R.id.txtTitolTask);
         encarregat = (TextView)findViewById(R.id.txtTitolEncarregat);
+        progresBar = (ProgressBar)findViewById(R.id.pbTasques);
 
         flatSessio = new FlatSessio(getApplicationContext());
         pis = flatSessio.getUserDetails();
@@ -89,7 +99,12 @@ public class TasquesActivity extends ActionBarActivity {
 
 
         new DescarregarDades().execute();
+        new UsuarisPis().execute();
 
+    }
+
+    private void updateTaskUser(){
+        //TODO update tasks user
     }
 
     private void refreshData(){
@@ -128,6 +143,9 @@ public class TasquesActivity extends ActionBarActivity {
             case R.id.menu_addTask:
                 Intent newTask = new Intent(this, NewTaskActivity.class);
                 startActivityForResult(new Intent(getBaseContext(),NewTaskActivity.class),1);
+                break;
+            case R.id.menu_assignarTasques:
+                updateTaskUser();
                 break;
             case R.id.menu_logout:
                 AlertDialog dialog = new AlertDialog.Builder(this).create();
@@ -199,4 +217,121 @@ public class TasquesActivity extends ActionBarActivity {
 
     }
 
+    class UsuarisPis extends AsyncTask<String,Void,ArrayList<users>> {
+
+        Boolean resultat;
+
+        @Override
+        protected void onPreExecute(){super.onPreExecute();}
+
+        @Override
+        protected ArrayList<users> doInBackground(String... params) {
+            ArrayList<users> llistaUsuaris = null;
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpostreq = new HttpPost(URL_DATA);
+            HttpResponse httpresponse = null;
+            try{
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(3);
+                parametres.add(new BasicNameValuePair("peticio","valida"));
+                parametres.add(new BasicNameValuePair("nameFlat",nomPis));
+                httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                httpresponse = httpClient.execute(httpostreq);
+                String responseText = EntityUtils.toString(httpresponse.getEntity());
+                llistaUsuaris = tractarJSON(responseText);
+                //resultat = comprovaAcces(httpresponse.getEntity().getContent());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return llistaUsuaris;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<users> llista){
+
+            usuaris = llista;
+
+        }
+
+        private ArrayList<users> tractarJSON(String json) {
+            Gson convert = new Gson();
+            return convert.fromJson(json, new TypeToken<ArrayList<users>>() {
+            }.getType());
+        }
+
 }
+
+    class UpdateTasks extends AsyncTask<String,Void,Boolean> {
+
+        Boolean resultat;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            progresBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpostreq = new HttpPost(URL_DATA);
+            HttpResponse httpresponse = null;
+            try{
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(3);
+                parametres.add(new BasicNameValuePair("peticio","valida"));
+                parametres.add(new BasicNameValuePair("nameFlat",nomPis));
+                httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                httpresponse = httpClient.execute(httpostreq);
+                String responseText = EntityUtils.toString(httpresponse.getEntity());
+                resultat = comprovaAcces(httpresponse.getEntity().getContent());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return resultat;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean resultat){
+            progresBar.setVisibility(View.GONE);
+        }
+
+        private boolean comprovaAcces(InputStream is) {
+            String rLine = "";
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            boolean retorn = false;
+
+            try {
+                while ((rLine = rd.readLine()) != null) {
+                    if (rLine.substring(14, 22).equals("correcte")) {
+                        retorn = true;
+                    } else {
+                        retorn = false;
+                    }
+                }
+
+
+            }
+
+            catch (IOException e) {
+                // e.printStackTrace();
+                retorn = false;
+            }
+
+            return retorn;
+
+        }
+
+
+
+    }}

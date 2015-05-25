@@ -7,6 +7,10 @@
         android:icon="@android:drawable/ic_input_add"
         android:title="Afegir Tasca"
         app:showAsAction="always"/>
+    <item android:id="@+id/menu_assignarTasques"
+        android:icon="@android:drawable/ic_popup_sync"
+        android:title="Assignar Tasca"
+        app:showAsAction="always"/>
     <item android:id="@+id/menu_logout"
         android:icon="@android:drawable/btn_dialog"
         android:title="Log Out"
