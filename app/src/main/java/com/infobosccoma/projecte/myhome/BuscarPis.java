@@ -53,6 +53,7 @@ public class BuscarPis extends ActionBarActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buscar_pis);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         txtNom = (TextView)findViewById(R.id.txtFlat);
         txtPassword = (TextView)findViewById(R.id.txtFlatPass);
@@ -83,11 +84,13 @@ public class BuscarPis extends ActionBarActivity implements View.OnClickListener
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                return true;
+            case R.id.home:
+                finish();
+                return true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
 
         return super.onOptionsItemSelected(item);

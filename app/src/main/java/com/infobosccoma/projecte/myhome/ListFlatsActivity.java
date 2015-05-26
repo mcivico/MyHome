@@ -178,6 +178,7 @@ public class ListFlatsActivity extends ActionBarActivity {
                 dialog.show();
                 break;
 
+
         }
 
         return super.onOptionsItemSelected(item);

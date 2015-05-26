@@ -62,6 +62,8 @@ public class ShopActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         producte = (TextView)findViewById(R.id.txtTitolShop);
         quantitat = (TextView)findViewById(R.id.txtTitolQuantitat);
 
@@ -139,6 +141,9 @@ public class ShopActivity extends ActionBarActivity {
                 });
                 //dialog.setIcon();
                 dialog.show();
+                break;
+            case R.id.home:
+                finish();
                 break;
 
         }

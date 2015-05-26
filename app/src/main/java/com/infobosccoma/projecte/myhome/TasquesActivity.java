@@ -9,9 +9,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,7 +21,7 @@ import com.infobosccoma.projecte.myhome.Controller.AdapterTask;
 import com.infobosccoma.projecte.myhome.Controller.FlatSessio;
 import com.infobosccoma.projecte.myhome.Controller.UsuariSessio;
 import com.infobosccoma.projecte.myhome.Model.Tasks;
-import com.infobosccoma.projecte.myhome.Model.users;
+import com.infobosccoma.projecte.myhome.Model.userName;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -40,18 +42,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 public class TasquesActivity extends ActionBarActivity {
 
     private static final String URL_DATA = "http://52.16.108.57/scripts/tasks.php";
-    private static final String URL_USERS = "http://52.16.108.57/scripts/users.php";
+    private static final String URL_USERS = "http://52.16.108.57/scripts/selectUsers.php";
 
     private ListView listViewTasks;
     private ArrayList<Tasks> dades;
     private AdapterTask adapter;
 
-    private ArrayList<users> usuaris;
+    private ArrayList<userName> usuaris;
+    private ArrayList<userName> usuarisAux;
 
     private TextView tasca, encarregat;
     private ProgressBar progresBar;
@@ -70,9 +74,12 @@ public class TasquesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasques);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         tasca = (TextView)findViewById(R.id.txtTitolTask);
         encarregat = (TextView)findViewById(R.id.txtTitolEncarregat);
         progresBar = (ProgressBar)findViewById(R.id.pbTasques);
+        progresBar.setVisibility(View.GONE);
 
         flatSessio = new FlatSessio(getApplicationContext());
         pis = flatSessio.getUserDetails();
@@ -104,13 +111,36 @@ public class TasquesActivity extends ActionBarActivity {
     }
 
     private void updateTaskUser(){
-        //TODO update tasks user
+        usuarisAux = (ArrayList)usuaris.clone();
+        progresBar.setVisibility(View.VISIBLE);
+        Random rand = new Random();
+        for(int i = 0;i<dades.size();i++){
+            if(usuaris.size()<1){
+               usuaris = (ArrayList)usuarisAux.clone();
+            }
+            int aleatori = rand.nextInt(usuaris.size());
+            new UpdateTasks(dades.get(i).getIdTask()+"",usuaris.get(aleatori).getNameUser()).execute();
+            usuaris.remove(aleatori);
+        }
+        usuaris = (ArrayList)usuarisAux.clone();
+        progresBar.setVisibility(View.GONE);
     }
 
     private void refreshData(){
         adapter = new AdapterTask(this,dades);
         listViewTasks.setAdapter(adapter);
         listViewTasks.setVisibility(View.VISIBLE);
+
+        listViewTasks.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> p, View v, final int po, long id) {
+                String idTaska = dades.get(po).getIdTask()+"";
+                new EliminarTaska(idTaska).execute();
+
+                return true;
+            }
+        });
     }
 
 
@@ -162,6 +192,9 @@ public class TasquesActivity extends ActionBarActivity {
                 //dialog.setIcon();
                 dialog.show();
                 break;
+            case R.id.home:
+                finish();
+                return true;
 
         }
 
@@ -217,7 +250,7 @@ public class TasquesActivity extends ActionBarActivity {
 
     }
 
-    class UsuarisPis extends AsyncTask<String,Void,ArrayList<users>> {
+    class UsuarisPis extends AsyncTask<String,Void,ArrayList<userName>> {
 
         Boolean resultat;
 
@@ -225,19 +258,20 @@ public class TasquesActivity extends ActionBarActivity {
         protected void onPreExecute(){super.onPreExecute();}
 
         @Override
-        protected ArrayList<users> doInBackground(String... params) {
-            ArrayList<users> llistaUsuaris = null;
+        protected ArrayList<userName> doInBackground(String... params) {
+            ArrayList<userName> llistaUsuaris = null;
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpostreq = new HttpPost(URL_DATA);
+            HttpPost httpostreq = new HttpPost(URL_USERS);
             HttpResponse httpresponse = null;
             try{
                 List<NameValuePair> parametres = new ArrayList<NameValuePair>(3);
-                parametres.add(new BasicNameValuePair("peticio","valida"));
+                parametres.add(new BasicNameValuePair("peticio","select"));
                 parametres.add(new BasicNameValuePair("nameFlat",nomPis));
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
                 llistaUsuaris = tractarJSON(responseText);
+                String m = "";
                 //resultat = comprovaAcces(httpresponse.getEntity().getContent());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -252,15 +286,15 @@ public class TasquesActivity extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<users> llista){
+        protected void onPostExecute(ArrayList<userName> llista){
 
             usuaris = llista;
 
         }
 
-        private ArrayList<users> tractarJSON(String json) {
+        private ArrayList<userName> tractarJSON(String json) {
             Gson convert = new Gson();
-            return convert.fromJson(json, new TypeToken<ArrayList<users>>() {
+            return convert.fromJson(json, new TypeToken<ArrayList<userName>>() {
             }.getType());
         }
 
@@ -269,11 +303,16 @@ public class TasquesActivity extends ActionBarActivity {
     class UpdateTasks extends AsyncTask<String,Void,Boolean> {
 
         Boolean resultat;
+        String idTask, usuari;
+
+        UpdateTasks(String idTask, String usuari){
+            this.idTask = idTask;
+            this.usuari = usuari;
+        }
 
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            progresBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -283,12 +322,13 @@ public class TasquesActivity extends ActionBarActivity {
             HttpResponse httpresponse = null;
             try{
                 List<NameValuePair> parametres = new ArrayList<NameValuePair>(3);
-                parametres.add(new BasicNameValuePair("peticio","valida"));
-                parametres.add(new BasicNameValuePair("nameFlat",nomPis));
+                parametres.add(new BasicNameValuePair("peticio","inserirUser"));
+                parametres.add(new BasicNameValuePair("nomUserTask",usuari));
+                parametres.add(new BasicNameValuePair("idTasks",idTask));
                 httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
                 httpresponse = httpClient.execute(httpostreq);
                 String responseText = EntityUtils.toString(httpresponse.getEntity());
-                resultat = comprovaAcces(httpresponse.getEntity().getContent());
+//                resultat = comprovaAcces(httpresponse.getEntity().getContent());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (ClientProtocolException e) {
@@ -303,7 +343,7 @@ public class TasquesActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Boolean resultat){
-            progresBar.setVisibility(View.GONE);
+            new DescarregarDades().execute();
         }
 
         private boolean comprovaAcces(InputStream is) {
@@ -334,4 +374,89 @@ public class TasquesActivity extends ActionBarActivity {
 
 
 
-    }}
+    }
+
+    class EliminarTaska extends AsyncTask<String, Void, Boolean> {
+
+        String idTask;
+        Boolean resultat;
+
+        EliminarTaska(String idTask){
+            this.idTask = idTask;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpostreq = new HttpPost(URL_DATA);
+            HttpResponse httpresponse = null;
+            try{
+                List<NameValuePair> parametres = new ArrayList<NameValuePair>(2);
+                parametres.add(new BasicNameValuePair("peticio","delete"));
+                parametres.add(new BasicNameValuePair("idTasks",idTask));
+                httpostreq.setEntity(new UrlEncodedFormEntity(parametres));
+                httpresponse = httpClient.execute(httpostreq);
+                resultat = comprovaAcces(httpresponse.getEntity().getContent());
+
+                String m = "";
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return resultat;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean resultat) {
+            if(resultat){
+                Toast.makeText(TasquesActivity.this, "S'ha borrat la tasca", Toast.LENGTH_SHORT).show();
+                new DescarregarDades().execute();
+            }
+            else{
+                Toast.makeText(TasquesActivity.this, "No s'ha pogut borrar la tasca!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        private boolean comprovaAcces(InputStream is) {
+            String rLine = "";
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            boolean retorn = false;
+
+            try {
+                while ((rLine = rd.readLine()) != null) {
+                    if (rLine.substring(14, 22).equals("correcte")) {
+                        retorn = true;
+                    } else {
+                        retorn = false;
+                    }
+                }
+
+
+            }
+
+            catch (IOException e) {
+                // e.printStackTrace();
+                retorn = false;
+            }
+
+            return retorn;
+
+        }
+
+
+    }
+
+
+
+}

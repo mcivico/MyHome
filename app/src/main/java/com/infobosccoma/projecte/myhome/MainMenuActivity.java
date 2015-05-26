@@ -24,6 +24,8 @@ public class MainMenuActivity extends ActionBarActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         sessioUsuari = new UsuariSessio(getApplicationContext());
 
         btnTasques = (ImageButton)findViewById(R.id.imgTasques);
@@ -66,6 +68,9 @@ public class MainMenuActivity extends ActionBarActivity implements View.OnClickL
                 });
                 //dialog.setIcon();
                 dialog.show();
+            case R.id.home:
+                finish();
+                return true;
         }
 
 
@@ -87,6 +92,7 @@ public class MainMenuActivity extends ActionBarActivity implements View.OnClickL
                 Intent mapa = new Intent(getApplicationContext(),activity_map.class);
                 startActivity(mapa);
                 break;
+
         }
     }
 }

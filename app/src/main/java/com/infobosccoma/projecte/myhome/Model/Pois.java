@@ -7,19 +7,19 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class Pois {
     private int _id;
-    private String name, city;
+    private String name_pois, city;
     private double latitude, longitude;
     private LatLng posicio;
 
-    public Pois(int _id, String name,double latitude, double longitude, String city ){
+    public Pois(int _id, String name_pois,double latitude, double longitude, String city ){
         this._id = _id;
-        this.name = name;
+        this.name_pois = name_pois;
         this.latitude = latitude;
         this.longitude = longitude;
         this.city = city;
     }
-    public Pois( String name,double latitude, double longitude, String city ){
-        this.name = name;
+    public Pois( String name_pois,double latitude, double longitude, String city ){
+        this.name_pois = name_pois;
         this.latitude = latitude;
         this.longitude = longitude;
         this.city = city;
@@ -34,11 +34,11 @@ public class Pois {
     }
 
     public String getName() {
-        return name;
+        return name_pois;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name_pois = name_pois;
     }
 
     public String getCity() {

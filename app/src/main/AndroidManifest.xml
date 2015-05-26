@@ -38,23 +38,45 @@
         </activity>
         <activity
             android:name=".BuscarPis"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".ListFlatsActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.ListFlatsActivity"/>
         </activity>
         <activity
             android:name=".MainMenuActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".ListFlatsActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.ListFlatsActivity"/>
         </activity>
         <activity
             android:name=".TasquesActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".MainMenuActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.MainMenuActivity"/>
+
         </activity>
         <activity
             android:name=".activity_map"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".MainMenuActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.MainMenuActivity"/>
+
         </activity>
         <activity
             android:name=".NewFlatActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".ListFlatsActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.ListFlatsActivity"/>
         </activity>
 
         <meta-data
@@ -66,15 +88,27 @@
 
         <activity
             android:name=".ShopActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".MainMenuActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.MainMenuActivity"/>
         </activity>
         <activity
             android:name=".NewTaskActivity"
-            android:label="@string/title_activity_new_task" >
+            android:label="@string/app_name"
+            android:parentActivityName=".TasquesActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.TasquesActivityy"/>
         </activity>
         <activity
             android:name=".NewShopActivity"
-            android:label="@string/title_activity_new_shop" >
+            android:label="@string/app_name"
+            android:parentActivityName=".ShopActivity">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value="com.infobosccoma.project.myhome.ShopActivity"/>
         </activity>
     </application>
 

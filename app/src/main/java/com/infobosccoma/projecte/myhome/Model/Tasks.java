@@ -5,22 +5,22 @@ package com.infobosccoma.projecte.myhome.Model;
  */
 public class Tasks {
 
-    private int idTask, idFlatTask;
+    private int idTasks, idFlatTask;
     private String nameTask, nomUserTask;
 
     public Tasks(int idTask, int idFlatTask, String nameTask, String nomUserTask) {
-        this.idTask = idTask;
+        this.idTasks = idTask;
         this.idFlatTask = idFlatTask;
         this.nameTask = nameTask;
         this.nomUserTask = nomUserTask;
     }
 
     public int getIdTask() {
-        return idTask;
+        return idTasks;
     }
 
     public void setIdTask(int idTask) {
-        this.idTask = idTask;
+        this.idTasks = idTask;
     }
 
     public int getIdFlatTask() {

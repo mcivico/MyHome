@@ -40,6 +40,7 @@ public class activity_map extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_map);
         setUpMapIfNeeded();
+        new DescarregarDades().execute();
     }
 
     @Override
@@ -57,6 +58,7 @@ public class activity_map extends FragmentActivity {
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
+                mMap.setMyLocationEnabled(true);
                 setUpMap();
             }
         }
@@ -126,9 +128,6 @@ public class activity_map extends FragmentActivity {
                             .title(poi.getName()));
                     builder.include(posicio);
                 }
-
-                builder.include(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()));
-
 
                 //LatLngBounds bounds = new LatLngBounds();
                 LatLngBounds tmpBounds = builder.build();

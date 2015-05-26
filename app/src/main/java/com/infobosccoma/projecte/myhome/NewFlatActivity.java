@@ -59,6 +59,8 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_flat);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         sessioUsuari = new UsuariSessio(getApplicationContext());
 
         txtNomPis = (TextView)findViewById(R.id.txtNameFlat);
@@ -107,6 +109,9 @@ public class NewFlatActivity extends ActionBarActivity implements View.OnClickLi
                 });
                 //dialog.setIcon();
                 dialog.show();
+            case R.id.home:
+                finish();
+                return true;
         }
 
 

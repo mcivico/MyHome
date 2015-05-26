@@ -50,6 +50,8 @@ public class NewTaskActivity extends ActionBarActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         flatSessio = new FlatSessio(getApplicationContext());
         pis = flatSessio.getUserDetails();
         Iterator it = pis.entrySet().iterator();
@@ -79,11 +81,13 @@ public class NewTaskActivity extends ActionBarActivity implements View.OnClickLi
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                return true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            case R.id.home:
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
