@@ -16,17 +16,24 @@ import java.util.List;
 /**
  * Created by Marc on 22/05/2015.
  */
+
+/**
+ * Classe Adapter per a fer la llista de productes personalitzades
+ */
 public class AdapterShop extends ArrayAdapter {
 
     private Activity context;
     private List<shoppingcard> dades;
 
+    //Constructor de la classe
     public AdapterShop(Activity context, List<shoppingcard> dades){
         super(context, R.layout.listitem_shop,dades);
         this.context = context;
         this.dades = dades;
     }
 
+
+    //Funcio que retorna la vista que s'utilitzara a la llista
     @Override
     public View getView(int position, View convertView,ViewGroup parent){
         View element = convertView;
